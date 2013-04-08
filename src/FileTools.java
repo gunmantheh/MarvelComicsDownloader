@@ -31,7 +31,7 @@ public class FileTools {
         try {
 
             String counterString = String.valueOf(counter);
-            String formattedNumber = "%d".format(counterString).substring(counterString.length());
+            String formattedNumber = "%00d".format(counterString);
             String wholeFilename = filename + formattedNumber + ".jpg";
             OutputStream file = new FileOutputStream(wholeFilename);
             byte[] data = DatatypeConverter.parseBase64Binary(imageData);

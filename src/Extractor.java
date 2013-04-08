@@ -8,7 +8,7 @@ import sun.misc.BASE64Decoder;
  * To change this template use File | Settings | File Templates.
  */
 public class Extractor {
-    private static boolean DEBUG = true;
+    private static boolean DEBUG = false;
 
 
     private final String _filename;
@@ -53,6 +53,9 @@ public class Extractor {
             int numberOfLinks = 0;
             FileTools fileTools = new FileTools();
             int tempCount = 0;
+            int position = 0;
+            int konecObrazku = 0;
+            int zacatekObrazku = 0;
             TimeUtils performance = new TimeUtils();
             TimeUtils partialPerf = new TimeUtils();
             performance.Start();
@@ -60,14 +63,15 @@ public class Extractor {
             while ((data = (byte) file.read()) != -1) {
                 /* temp count*/
                 tempCount++;
-                if (tempCount > 1024*20)
+                if (tempCount > 1024*2000)
                 {
-                    tempCount = 0;
+
                     partialPerf.Stop();
                     genericUtils.debug(String.valueOf(1024*1000/1024/partialPerf.getTimeInMs()) + "KB/s");
-                    fileTools.SaveImage(odkaz,getFilename(), numberOfLinks);
-                    //partialPerf.Start();
-                    break;
+                    //fileTools.SaveImage(odkaz,getFilename(), numberOfLinks);
+                    tempCount = 0;
+                    partialPerf.Start();
+                    //break;
                 }
                 /* temp count end*/
 
@@ -79,10 +83,23 @@ public class Extractor {
                 else if (!href && count < hrefBytes.length && znak == hrefBytes[count] && zacatek)
                     count++;
                 else if (href && znak == '\"') {
+                    konecObrazku = position;
+                    System.out.println("zacatek: " + zacatekObrazku + ", konec: " + konecObrazku + ", velikost: " + ((konecObrazku-zacatekObrazku) / 1024) + " KB");
+                    numberOfLinks++;
+
+
+                    InputStream soubor = new FileInputStream(getFilename());
+                    byte[] tempData = new byte[konecObrazku-zacatekObrazku];
+                    soubor.skip(zacatekObrazku);
+                    soubor.read(tempData,0, konecObrazku-zacatekObrazku);
+                    String dataObrazku = new String(tempData,"UTF-8");
+                    fileTools.SaveImage(dataObrazku,getFilename(), numberOfLinks);
+
                     href = false;
                     genericUtils.debug("");
                     genericUtils.debug("konec obrazku");
                     count = 0;
+                    zacatekObrazku = -1;
                 } else
                     count = 0;
 
@@ -103,17 +120,12 @@ public class Extractor {
                     count = 0;
                     href = true;
                     zacatek = false;
+                    zacatekObrazku = position;
                     genericUtils.debug("");
                     genericUtils.debug("nalezen obrazek");
                 }
 
-                if (href && znak != '\"') {
-                    odkaz = odkaz + znak;
-                } else if (href && znak == '\"') {
-                    fileTools.SaveImage(odkaz,getFilename(), numberOfLinks);
-                    numberOfLinks++;
-                    odkaz = "";
-                }
+                position++;
             }
 
             file.close();
