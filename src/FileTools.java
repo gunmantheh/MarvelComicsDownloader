@@ -2,6 +2,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.util.List;
 import javax.xml.bind.DatatypeConverter;
 
 /**
@@ -13,7 +18,7 @@ import javax.xml.bind.DatatypeConverter;
  */
 public class FileTools {
 
-    boolean SaveLinks(String links,String filename) throws FileNotFoundException {
+    boolean SaveLinks(String links, String filename) throws FileNotFoundException {
         try {
 
             OutputStream file = new FileOutputStream(filename);
@@ -27,7 +32,42 @@ public class FileTools {
         return true;
     }
 
-    boolean SaveImage(String imageData,String filename, int counter) throws FileNotFoundException {
+    boolean DownloadLinks(List<String> links, String filename) {
+        for (int i = 0; i < links.size(); i++) {
+            URL website = null;
+            if (links.get(i) != "") {
+                try {
+                    website = new URL(links.get(i));
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+            }
+            ReadableByteChannel rbc = null;
+            if (website != null) {
+                try {
+                    rbc = Channels.newChannel(website.openStream());
+                } catch (IOException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+            }
+            FileOutputStream fos = null;
+            try {
+                fos = new FileOutputStream("image" + i +".svg");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+            try {
+                System.out.println("Downloading " + website.getFile());
+                fos.getChannel().transferFrom(rbc, 0, 1 << 24);
+                System.out.println("Finished " + website.getFile());
+            } catch (IOException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
+        return true;
+    }
+
+    boolean SaveImage(String imageData, String filename, int counter) throws FileNotFoundException {
         try {
 
             String counterString = String.valueOf(counter);
@@ -44,7 +84,6 @@ public class FileTools {
         }
         return true;
     }
-
 
 
 }

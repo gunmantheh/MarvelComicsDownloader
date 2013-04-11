@@ -1,5 +1,4 @@
 import java.io.*;
-import sun.misc.BASE64Decoder;
 /**
  * Created with IntelliJ IDEA.
  * User: Pavel
@@ -18,7 +17,6 @@ public class Extractor {
     public Extractor(String filename) {
         _filename = filename;
     }
-
 
     public String getLinks() {
         return _links;
@@ -68,10 +66,8 @@ public class Extractor {
 
                     partialPerf.Stop();
                     genericUtils.debug(String.valueOf(1024*1000/1024/partialPerf.getTimeInMs()) + "KB/s");
-                    //fileTools.SaveImage(odkaz,getFilename(), numberOfLinks);
                     tempCount = 0;
                     partialPerf.Start();
-                    //break;
                 }
                 /* temp count end*/
 

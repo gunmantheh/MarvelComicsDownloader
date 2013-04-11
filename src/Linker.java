@@ -1,4 +1,6 @@
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -10,7 +12,7 @@ import java.io.*;
 public class Linker {
 
     private String _filename;
-    private String _links;
+    private List<String> _links;
     private String _linksFilename;
     private boolean _debug;
     private static boolean DEBUG = true;
@@ -19,21 +21,29 @@ public class Linker {
     public Linker(String filename, String linksFilename) {
         _filename = filename;
         _linksFilename = linksFilename;
+        _links = new ArrayList<String>();
     }
 
     public Linker(String filename, String linksFilename, boolean debug) {
         _filename = filename;
         _linksFilename = linksFilename;
+        _links = new ArrayList<String>();
     }
 
 
-    public String getLinks() {
+    public List<String> getLinks() {
         return _links;
     }
 
-    private void setLinks(String link){
-        if (link == null) {link = "";}
+    private void setLinks(List<String> link){
+        if (link == null) {link = new ArrayList<String>();}
         _links = link;
+    }
+
+    private void addLink(String link){
+        if (link != null && link != ""){
+        _links.add(link);
+        }
     }
 
     public String getLinksFilename() {
@@ -108,8 +118,9 @@ public class Linker {
 
                 if (href && znak != '\"') {
                     odkaz = odkaz + znak;
-                } else if (href && znak == '\"') {
-                    odkaz = odkaz + "\n";
+                } else if (href && znak == '\"' && odkaz != null && odkaz != "") {
+                    addLink(odkaz);
+                    odkaz = "";
                     numberOfLinks++;
                 }
             }
@@ -118,7 +129,6 @@ public class Linker {
             performance.Stop();
             GenericUtils genUtils = new GenericUtils(DEBUG);
             genUtils.debug("File processed in: " + performance.getTimeInMs() + " ms");
-            setLinks(odkaz);
             System.out.println(numberOfLinks + " links found");
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
