@@ -12,14 +12,9 @@ public class Extractor {
 
     private final String _filename;
     private String _links;
-    private boolean _debug;
 
     public Extractor(String filename) {
         _filename = filename;
-    }
-
-    public String getLinks() {
-        return _links;
     }
 
     private void setLinks(String link){
@@ -29,10 +24,6 @@ public class Extractor {
 
     String getFilename() {
         return _filename;
-    }
-
-    public boolean getDebug(){
-        return _debug;
     }
 
     boolean GetLinks() throws IOException {

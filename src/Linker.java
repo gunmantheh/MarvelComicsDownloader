@@ -41,7 +41,7 @@ public class Linker {
     }
 
     private void addLink(String link){
-        if (link != null && link != ""){
+        if (link != null && !link.equals("")){
         _links.add(link);
         }
     }
@@ -118,7 +118,7 @@ public class Linker {
 
                 if (href && znak != '\"') {
                     odkaz = odkaz + znak;
-                } else if (href && znak == '\"' && odkaz != null && odkaz != "") {
+                } else if (href && znak == '\"' && odkaz != null && !odkaz.equals("")) {
                     addLink(odkaz);
                     odkaz = "";
                     numberOfLinks++;
